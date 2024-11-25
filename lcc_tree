@@ -1,0 +1,41 @@
+// LCC Tree
+digraph {
+	rankdir=TB
+	node [shape=box style=rounded]
+	"1-2KDVAPB" [label="ID: 1-2KDVAPB
+Type: CHARGE
+Original Bank Value: 15000
+Original Market Value: 30000
+Original Cat Value: 45000
+Residual Bank Value: 15000
+Residual Market Value: 30000
+Residual Cat Value: 4500"]
+	test [label="ID: test
+Type: PRODUCT
+Original Bank Value: 4536
+Original Market Value: 45336
+Original Cat Value: 45366
+Residual Bank Value: 4536
+Residual Market Value: 45336
+Residual Cat Value: 5600"]
+	"1-2KDVAPB" -> test [label="Q1
+Indirect"]
+	root [label="ID: root
+Type: PRODUCT
+Original Bank Value: 544564
+Original Market Value: 30000
+Original Cat Value: 45000
+Residual Bank Value: 15000
+Residual Market Value: 30000
+Residual Cat Value: 4500"]
+	"1-2KDVAPB" [label="ID: 1-2KDVAPB
+Type: CHARGE
+Original Bank Value: 15000
+Original Market Value: 30000
+Original Cat Value: 45000
+Residual Bank Value: 15000
+Residual Market Value: 30000
+Residual Cat Value: 4500"]
+	root -> "1-2KDVAPB" [label="Q1
+Direct"]
+}
