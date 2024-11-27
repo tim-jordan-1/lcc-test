@@ -264,4 +264,67 @@ def visualize_tree_graphviz(intersection_list, output_file="treetest"):
         print(f"Error rendering graph: {e}")
         print("Make sure Graphviz is installed on your system")
 
-visualize_tree_graphviz(intersection_list)
+def visualize_tree_from_json(json_data, output_file="tree_from_json"):
+    """
+    Creates a visual representation of the tree using Graphviz from quadrants.json format.
+    Args:
+        json_data: Dictionary containing quadrant information
+        output_file: Name of the output file (without extension)
+    """
+    # Create a new directed graph
+    dot = Digraph(comment='Tree Visualization')
+    dot.attr(rankdir='TB')  # Top to bottom direction
+    
+    # Track added nodes to avoid duplicates
+    nodes_set = set()
+    
+    # Helper function to create node label
+    def create_node_label(node):
+        return (
+            f"{node['id']}\\n"
+            f"Type: {node['type']}\\n"
+            f"Original Bank Value: {node['originalBankValue']}\\n"
+            f"Original Market Value: {node['originalMarketValue']}\\n"
+            f"Original Categorisation Value: {node['originalCategoorisationValue']}\\n"
+            f"Residual Bank Value: {node['residualBankValue']}\\n"
+            f"Residual Market Value: {node['residualMarketValue']}\\n"
+            f"Residual Categorisation Value: {node['residualCategorisationValue']}\\n"
+            f"Pre Q1 Residual Bank Value: {node['preQ1ResidualBankValue']}\\n"
+            f"Pre Q1 Residual Market Value: {node['preQ1ResidualMarketValue']}"
+        )
+    
+    # First, add all nodes from each quadrant
+    for quadrant_key, quadrant_data in json_data.items():
+        for node in quadrant_data['nodes']:
+            if node['id'] not in nodes_set:
+                dot.node(node['id'], create_node_label(node))
+                nodes_set.add(node['id'])
+    
+    # Then add all edges from prioritised links
+    for quadrant_key, quadrant_data in json_data.items():
+        for index, link in enumerate(quadrant_data.get('prioritisedLinks', [])):
+            node1 = link['node1']  # child node
+            node2 = link['node2']  # parent node
+            
+            # Add nodes if they haven't been added yet
+            for node in [node1, node2]:
+                if node['id'] not in nodes_set:
+                    dot.node(node['id'], create_node_label(node))
+                    nodes_set.add(node['id'])
+            
+            # Add edge with link type and index
+            link_style = 'solid' if link['linkType'] == 'DIRECT' else 'dashed'
+            link_label = f"{'D' if link['linkType'] == 'DIRECT' else 'I'} (Order: {index})"
+            dot.edge(node2['id'], node1['id'], label=link_label, style=link_style)
+    
+    # Render the graph
+    try:
+        dot.render(output_file, view=True, format='pdf', cleanup=True)
+    except Exception as e:
+        print(f"Error rendering graph: {e}")
+        print("Make sure Graphviz is installed on your system")
+
+with open('quadrants.json', 'r') as f:
+    quadrants_data = json.load(f)
+    
+visualize_tree_from_json(quadrants_data)
