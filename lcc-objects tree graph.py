@@ -203,7 +203,7 @@ def visualize_tree(intersection_list):
     if root:
         print_tree(root)
 
-def visualize_tree_graphviz(intersection_list, output_file="tree"):
+def visualize_tree_graphviz(intersection_list, output_file="treetest"):
     """
     Creates a visual representation of the tree using Graphviz.
     Args:
@@ -218,22 +218,44 @@ def visualize_tree_graphviz(intersection_list, output_file="tree"):
     nodes_set = set()
     
     # Add all nodes first
-    for intersection in intersection_list:
-        upper_id = intersection.upper_node.id
-        lower_id = intersection.lower_node.id
+    for index, intersection in enumerate(intersection_list):  # Use enumerate to get the index
+        upper_node = intersection.upper_node
+        lower_node = intersection.lower_node
         
-        # Add nodes if they don't exist
-        if upper_id not in nodes_set:
-            dot.node(upper_id, upper_id)
-            nodes_set.add(upper_id)
-        if lower_id not in nodes_set:
-            dot.node(lower_id, lower_id)
-            nodes_set.add(lower_id)
+        # Add upper node with detailed information
+        upper_label = (
+            f"{upper_node.id}\\n"
+            f"Original Bank Value: {upper_node.original_bank_value}\\n"
+            f"Original Market Value: {upper_node.original_market_value}\\n"
+            f"Original Categorisation Value: {upper_node.original_categorisation_value}\\n"
+            f"Residual Bank Value: {upper_node.residual_bank_value}\\n"
+            f"Residual Market Value: {upper_node.residual_market_value}\\n"
+            f"Residual Categorisation Value: {upper_node.residual_categorisation_value}"
+        )
+        if upper_node.id not in nodes_set:
+            dot.node(upper_node.id, upper_label)
+            nodes_set.add(upper_node.id)
         
-        # Add edge with link type
+        # Add lower node with detailed information
+        lower_label = (
+            f"{lower_node.id}\\n"
+            f"Original Bank Value: {lower_node.original_bank_value}\\n"
+            f"Original Market Value: {lower_node.original_market_value}\\n"
+            f"Original Categorisation Value: {lower_node.original_categorisation_value}\\n"
+            f"Residual Bank Value: {lower_node.residual_bank_value}\\n"
+            f"Residual Market Value: {lower_node.residual_market_value}\\n"
+            f"Residual Categorisation Value: {lower_node.residual_categorisation_value}"
+        )
+        if lower_node.id not in nodes_set:
+            print(lower_node.id)
+            print(lower_node.id, lower_label)
+            dot.node(lower_node.id, lower_label)
+            nodes_set.add(lower_node.id)
+        
+        # Add edge with link type and index as order
         link_style = 'solid' if intersection.link_type == 1 else 'dashed'
-        link_label = 'D' if intersection.link_type == 1 else 'I'
-        dot.edge(upper_id, lower_id, label=link_label, style=link_style)
+        link_label = f"{'D' if intersection.link_type == 1 else 'I'} (Index: {index})"  # Use index instead of process order
+        dot.edge(upper_node.id, lower_node.id, label=link_label, style=link_style)
     
     # Render the graph
     try:
@@ -242,37 +264,4 @@ def visualize_tree_graphviz(intersection_list, output_file="tree"):
         print(f"Error rendering graph: {e}")
         print("Make sure Graphviz is installed on your system")
 
-visualize_tree(intersection_list)
-# visualize_tree_graphviz(intersection_list)
-
-
-# tree = {
-#     -1: {
-#         'root': Node(id = 'root',
-# type = 'PRODUCT',
-# original_bank_value = 544564,
-# original_market_value = 30000,
-# original_categorisation_value = 45000,
-# residual_bank_value = 15000,
-# residual_market_value = 30000,
-# residual_categorisation_value = 4500 )
-#     },
-#     0: {
-#         '1-2KDVAPB': Node(id = '1-2KDVAPB',
-# type = 'CHARGE',
-# original_bank_value = 15000,
-# original_market_value = 30000,
-# original_categorisation_value = 45000,
-# residual_bank_value = 15000,
-# residual_market_value = 30000,
-# residual_categorisation_value = 4500 ),
-#         'test': Node(id = 'test',
-# type = 'PRODUCT',
-# original_bank_value = 4536,
-# original_market_value = 45336,
-# original_categorisation_value = 45366,
-# residual_bank_value = 4536,
-# residual_market_value = 45336,
-# residual_categorisation_value = 5600 )
-#     }
-# }
+visualize_tree_graphviz(intersection_list)
